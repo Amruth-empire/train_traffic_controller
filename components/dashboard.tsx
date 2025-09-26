@@ -27,7 +27,13 @@ import {
   mockTrackSections,
 } from "@/lib/mock-data";
 import { logUserAction } from "@/lib/audit-logger";
-import type { Train, Alert, KPI, OptimizationSuggestion, TrackSection } from "@/lib/types";
+import type {
+  Train,
+  Alert,
+  KPI,
+  OptimizationSuggestion,
+  TrackSection,
+} from "@/lib/types";
 
 export function Dashboard() {
   const { user } = useAuth();
@@ -35,7 +41,8 @@ export function Dashboard() {
   const [trains, setTrains] = useState<Train[]>(mockTrains);
   const [alerts, setAlerts] = useState<Alert[]>(mockAlerts);
   const [kpis, setKPIs] = useState<KPI>(mockKPIs);
-  const [trackSections, setTrackSections] = useState<TrackSection[]>(mockTrackSections);
+  const [trackSections, setTrackSections] =
+    useState<TrackSection[]>(mockTrackSections);
   const [optimizationSuggestions, setOptimizationSuggestions] = useState<
     OptimizationSuggestion[]
   >(mockOptimizationSuggestions);
@@ -165,14 +172,18 @@ export function Dashboard() {
 
         {selectedView === "trains" && (
           <PermissionGuard permission="view_trains">
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <div className="xl:col-span-2">
-                <TrackVisualization 
-                  trackSections={trackSections} 
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div>
+                <TrackVisualization
+                  trackSections={trackSections}
                   trains={filteredTrains}
                   onTrackClick={(track) => {
                     if (user) {
-                      logUserAction(user, "track_view", `Viewed track section ${track.name} (${track.id})`);
+                      logUserAction(
+                        user,
+                        "track_view",
+                        `Viewed track section ${track.name} (${track.id})`
+                      );
                     }
                   }}
                 />

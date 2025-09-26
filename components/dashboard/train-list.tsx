@@ -74,15 +74,15 @@ export function TrainList({ trains, showDetails = false }: TrainListProps) {
   };
 
   return (
-    <Card className="bg-slate-800 border-slate-700">
-      <CardHeader>
+    <Card className="bg-slate-800 border-slate-700 h-full flex flex-col">
+      <CardHeader className="flex-shrink-0">
         <CardTitle className="text-white flex items-center">
           <Train className="h-5 w-5 mr-2 text-blue-500" />
           Active Trains ({trains.length})
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-3 max-h-96 overflow-y-auto">
+      <CardContent className="flex-1 min-h-0">
+        <div className="space-y-3 h-120 overflow-y-auto">
           {trains.map((train) => (
             <div
               key={train.id}
@@ -123,7 +123,7 @@ export function TrainList({ trains, showDetails = false }: TrainListProps) {
                   </div>
                   <div className="flex items-center space-x-2 text-slate-300">
                     <Gauge className="h-4 w-4" />
-                    <span>{train.speed} km/h</span>
+                    <span>{parseFloat(train.speed.toFixed(5))} km/h</span>
                   </div>
                 </div>
                 <div className="space-y-2">

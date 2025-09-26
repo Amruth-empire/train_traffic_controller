@@ -51,7 +51,7 @@ export function OptimizationPanel({ suggestions, expanded = false }: Optimizatio
   const pendingSuggestions = suggestions.filter((s) => s.status === "pending")
 
   return (
-    <Card className="bg-slate-800 border-slate-700">
+    <Card className="bg-slate-800 border-slate-700 max-w-2xl">
       <CardHeader>
         <CardTitle className="text-white flex items-center">
           <Zap className="h-5 w-5 mr-2 text-purple-500" />
@@ -119,7 +119,7 @@ export function OptimizationPanel({ suggestions, expanded = false }: Optimizatio
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-slate-600 text-slate-300 hover:text-white bg-transparent"
+                    className="border-slate-600 text-slate-300 hover:text-black bg-transparent"
                   >
                     View Details
                   </Button>

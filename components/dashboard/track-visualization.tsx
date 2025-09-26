@@ -46,7 +46,7 @@ export function TrackVisualization({ trackSections, trains, onTrackClick }: Trac
   };
 
   return (
-    <Card className="bg-slate-800 border-slate-700">
+    <Card className="bg-slate-800 border-slate-700 max-w-4xl">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2 text-white">
           <Route className="h-5 w-5 text-white" />
