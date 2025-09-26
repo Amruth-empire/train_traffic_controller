@@ -77,13 +77,11 @@ export function DashboardHeader({ user, selectedView, onViewChange }: DashboardH
   return (
     <header className="bg-slate-800 border-b border-slate-700 px-6 py-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <Train className="h-8 w-8 text-blue-500" />
-            <h1 className="text-2xl font-bold text-white">Railway Control</h1>
-          </div>
+        <div className="flex items-center space-x-2">
+          <Train className="h-8 w-8 text-blue-500" />
+          <h1 className="text-2xl font-bold text-white">Railway Control</h1>
 
-          <nav className="flex space-x-1 overflow-x-auto">
+          <nav className="flex space-x-0 overflow-x-auto scrollbar-hide">
             {views.map((view) => {
               const Icon = view.icon
               return (
