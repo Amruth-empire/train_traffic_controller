@@ -14,7 +14,7 @@ Any changes you make to your deployed app will be automatically pushed to this r
 
 Your project is live at:
 
-**[https://vercel.com/amruths-projects-dad48d31/v0-train-traffic-controller-dashboard](https://vercel.com/amruths-projects-dad48d31/v0-train-traffic-controller-dashboard)**
+**[https://train-traffic-controller-gamma.vercel.app/](https://train-traffic-controller-gamma.vercel.app/)**
 
 ## Build your app
 
