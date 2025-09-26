@@ -1,68 +1,88 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useAuth } from "@/contexts/auth-context"
-import { useWebSocket } from "@/contexts/websocket-context"
-import { PermissionManager } from "@/lib/permissions"
-import { PermissionGuard } from "./permission-guard"
-import { DashboardHeader } from "./dashboard/dashboard-header"
-import { KPICards } from "./dashboard/kpi-cards"
-import { TrainMap } from "./dashboard/train-map"
-import { TrainList } from "./dashboard/train-list"
-import { AlertsPanel } from "./dashboard/alerts-panel"
-import { ScheduleGantt } from "./dashboard/schedule-gantt"
-import { OptimizationPanel } from "./dashboard/optimization-panel"
-import { RealTimeNotifications } from "./real-time-notifications"
-import { RoleBasedDashboard } from "./role-based-dashboard"
-import { AuditLogsPanel } from "./dashboard/audit-logs-panel"
-import { SimulationPanel } from "./dashboard/simulation-panel"
-import { EnhancedKPIDashboard } from "./dashboard/enhanced-kpi-dashboard"
-import { ConfigurableAlerts } from "./dashboard/configurable-alerts"
-import { mockKPIs, mockTrains, mockAlerts, mockOptimizationSuggestions } from "@/lib/mock-data"
-import { logUserAction } from "@/lib/audit-logger"
-import type { Train, Alert, KPI, OptimizationSuggestion } from "@/lib/types"
+import { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { useWebSocket } from "@/contexts/websocket-context";
+import { PermissionManager } from "@/lib/permissions";
+import { PermissionGuard } from "./permission-guard";
+import { DashboardHeader } from "./dashboard/dashboard-header";
+import { KPICards } from "./dashboard/kpi-cards";
+import { TrainMap } from "./dashboard/train-map";
+import { TrainList } from "./dashboard/train-list";
+import { AlertsPanel } from "./dashboard/alerts-panel";
+import { ScheduleGantt } from "./dashboard/schedule-gantt";
+import { OptimizationPanel } from "./dashboard/optimization-panel";
+import { RealTimeNotifications } from "./real-time-notifications";
+import { RoleBasedDashboard } from "./role-based-dashboard";
+import { AuditLogsPanel } from "./dashboard/audit-logs-panel";
+import { SimulationPanel } from "./dashboard/simulation-panel";
+import { EnhancedKPIDashboard } from "./dashboard/enhanced-kpi-dashboard";
+import { ConfigurableAlerts } from "./dashboard/configurable-alerts";
+import {
+  mockKPIs,
+  mockTrains,
+  mockAlerts,
+  mockOptimizationSuggestions,
+} from "@/lib/mock-data";
+import { logUserAction } from "@/lib/audit-logger";
+import type { Train, Alert, KPI, OptimizationSuggestion } from "@/lib/types";
 
 export function Dashboard() {
-  const { user } = useAuth()
-  const { kpiUpdates, trainUpdates } = useWebSocket()
-  const [trains, setTrains] = useState<Train[]>(mockTrains)
-  const [alerts, setAlerts] = useState<Alert[]>(mockAlerts)
-  const [kpis, setKPIs] = useState<KPI>(mockKPIs)
-  const [optimizationSuggestions, setOptimizationSuggestions] =
-    useState<OptimizationSuggestion[]>(mockOptimizationSuggestions)
+  const { user } = useAuth();
+  const { kpiUpdates, trainUpdates } = useWebSocket();
+  const [trains, setTrains] = useState<Train[]>(mockTrains);
+  const [alerts, setAlerts] = useState<Alert[]>(mockAlerts);
+  const [kpis, setKPIs] = useState<KPI>(mockKPIs);
+  const [optimizationSuggestions, setOptimizationSuggestions] = useState<
+    OptimizationSuggestion[]
+  >(mockOptimizationSuggestions);
   const [selectedView, setSelectedView] = useState<
-    "overview" | "trains" | "schedule" | "optimization" | "access" | "analytics" | "simulation" | "audit" | "alerts"
-  >("overview")
+    | "overview"
+    | "trains"
+    | "schedule"
+    | "optimization"
+    | "access"
+    | "analytics"
+    | "simulation"
+    | "audit"
+    | "alerts"
+  >("overview");
 
   // Filter data based on user permissions and section access
-  const filteredTrains = PermissionManager.filterDataByAccess(user, trains)
-  const filteredAlerts = PermissionManager.filterDataByAccess(user, alerts)
+  const filteredTrains = PermissionManager.filterDataByAccess(user, trains);
+  const filteredAlerts = PermissionManager.filterDataByAccess(user, alerts);
 
   useEffect(() => {
     if (user) {
-      logUserAction(user, "Dashboard Access", `User accessed dashboard with ${selectedView} view`)
+      logUserAction(
+        user,
+        "Dashboard Access",
+        `User accessed dashboard with ${selectedView} view`
+      );
     }
-  }, [user, selectedView])
+  }, [user, selectedView]);
 
   useEffect(() => {
     if (kpiUpdates) {
-      setKPIs((prev) => ({ ...prev, ...kpiUpdates }))
+      setKPIs((prev) => ({ ...prev, ...kpiUpdates }));
     }
-  }, [kpiUpdates])
+  }, [kpiUpdates]);
 
   useEffect(() => {
     if (trainUpdates.length > 0) {
-      const latestUpdate = trainUpdates[trainUpdates.length - 1]
+      const latestUpdate = trainUpdates[trainUpdates.length - 1];
       if (latestUpdate.trains) {
         setTrains((prevTrains) =>
           prevTrains.map((train) => {
-            const update = latestUpdate.trains.find((u: any) => u.id === train.id)
-            return update ? { ...train, ...update } : train
-          }),
-        )
+            const update = latestUpdate.trains.find(
+              (u: any) => u.id === train.id
+            );
+            return update ? { ...train, ...update } : train;
+          })
+        );
       }
     }
-  }, [trainUpdates])
+  }, [trainUpdates]);
 
   // Simulate real-time updates
   useEffect(() => {
@@ -78,23 +98,33 @@ export function Dashboard() {
           },
           // Simulate speed changes
           speed: Math.max(0, train.speed + (Math.random() - 0.5) * 10),
-        })),
-      )
+        }))
+      );
 
       // Update KPIs
       setKPIs((prevKPIs) => ({
         ...prevKPIs,
-        onTimePerformance: Math.max(80, Math.min(95, prevKPIs.onTimePerformance + (Math.random() - 0.5) * 2)),
-        systemEfficiency: Math.max(85, Math.min(98, prevKPIs.systemEfficiency + (Math.random() - 0.5) * 1)),
-      }))
-    }, 5000) // Update every 5 seconds
+        onTimePerformance: Math.max(
+          80,
+          Math.min(95, prevKPIs.onTimePerformance + (Math.random() - 0.5) * 2)
+        ),
+        systemEfficiency: Math.max(
+          85,
+          Math.min(98, prevKPIs.systemEfficiency + (Math.random() - 0.5) * 1)
+        ),
+      }));
+    }, 5000); // Update every 5 seconds
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-slate-900">
-      <DashboardHeader user={user!} selectedView={selectedView} onViewChange={setSelectedView} />
+    <div className="min-h-screen bg-slate-100 text-slate-900 transition-colors duration-300 dark:bg-slate-900 dark:text-white">
+      <DashboardHeader
+        user={user!}
+        selectedView={selectedView}
+        onViewChange={setSelectedView}
+      />
 
       <RealTimeNotifications />
 
@@ -145,7 +175,10 @@ export function Dashboard() {
         {selectedView === "optimization" && (
           <PermissionGuard permission="view_optimization">
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              <OptimizationPanel suggestions={optimizationSuggestions} expanded />
+              <OptimizationPanel
+                suggestions={optimizationSuggestions}
+                expanded
+              />
               <div className="space-y-6">
                 <KPICards kpis={kpis} />
                 <AlertsPanel alerts={filteredAlerts} />
@@ -181,5 +214,5 @@ export function Dashboard() {
         {selectedView === "access" && <RoleBasedDashboard />}
       </main>
     </div>
-  )
+  );
 }
