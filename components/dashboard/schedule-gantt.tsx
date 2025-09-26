@@ -1,55 +1,55 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Calendar, Clock } from "lucide-react"
-import type { Train } from "@/lib/types"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, Clock } from "lucide-react";
+import type { Train } from "@/lib/types";
 
 interface ScheduleGanttProps {
-  trains: Train[]
+  trains: Train[];
 }
 
 export function ScheduleGantt({ trains }: ScheduleGanttProps) {
   // Create time slots for the next 4 hours
-  const now = new Date()
+  const now = new Date();
   const timeSlots = Array.from({ length: 16 }, (_, i) => {
-    const time = new Date(now.getTime() + i * 15 * 60 * 1000) // 15-minute intervals
-    return time
-  })
+    const time = new Date(now.getTime() + i * 15 * 60 * 1000); // 15-minute intervals
+    return time;
+  });
 
   const getStatusColor = (status: Train["status"]) => {
     switch (status) {
       case "running":
-        return "bg-green-600"
+        return "bg-green-600";
       case "delayed":
-        return "bg-yellow-600"
+        return "bg-yellow-600";
       case "cancelled":
-        return "bg-red-600"
+        return "bg-red-600";
       case "scheduled":
-        return "bg-blue-600"
+        return "bg-blue-600";
       case "completed":
-        return "bg-gray-600"
+        return "bg-gray-600";
       default:
-        return "bg-gray-600"
+        return "bg-gray-600";
     }
-  }
+  };
 
   const getTrainPosition = (train: Train) => {
-    const startTime = train.actualDeparture || train.scheduledDeparture
-    const endTime = train.estimatedArrival || train.scheduledArrival
-    const duration = endTime.getTime() - startTime.getTime()
-    const startOffset = startTime.getTime() - now.getTime()
+    const startTime = train.actualDeparture || train.scheduledDeparture;
+    const endTime = train.estimatedArrival || train.scheduledArrival;
+    const duration = endTime.getTime() - startTime.getTime();
+    const startOffset = startTime.getTime() - now.getTime();
 
     // Calculate position as percentage of the 4-hour window
-    const windowDuration = 4 * 60 * 60 * 1000 // 4 hours in ms
-    const left = Math.max(0, (startOffset / windowDuration) * 100)
-    const width = Math.min(100 - left, (duration / windowDuration) * 100)
+    const windowDuration = 4 * 60 * 60 * 1000; // 4 hours in ms
+    const left = Math.max(0, (startOffset / windowDuration) * 100);
+    const width = Math.min(100 - left, (duration / windowDuration) * 100);
 
-    return { left: `${left}%`, width: `${width}%` }
-  }
+    return { left: `${left}%`, width: `${width}%` };
+  };
 
   return (
-    <Card className="bg-slate-800 border-slate-700">
+    <Card className="bg-slate-800 border-slate-700 max-w-full">
       <CardHeader>
         <CardTitle className="text-white flex items-center">
           <Calendar className="h-5 w-5 mr-2 text-blue-500" />
@@ -66,7 +66,10 @@ export function ScheduleGantt({ trains }: ScheduleGanttProps) {
                 .map((time, i) => (
                   <div key={i} className="flex-1 text-center">
                     <span className="text-slate-300 text-sm">
-                      {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      {time.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </span>
                   </div>
                 ))}
@@ -78,25 +81,36 @@ export function ScheduleGantt({ trains }: ScheduleGanttProps) {
           </div>
 
           {/* Train schedules */}
-          <div className="space-y-2 max-h-96 overflow-y-auto">
+          <div className="space-y-2">
             {trains.map((train) => {
-              const position = getTrainPosition(train)
-              const isVisible = Number.parseFloat(position.width.replace("%", "")) > 0
+              const position = getTrainPosition(train);
+              const isVisible =
+                Number.parseFloat(position.width.replace("%", "")) > 0;
 
-              if (!isVisible) return null
+              if (!isVisible) return null;
 
               return (
                 <div key={train.id} className="relative">
                   <div className="flex items-center mb-1">
                     <div className="w-24 flex-shrink-0">
-                      <span className="text-white font-medium">{train.number}</span>
-                      <Badge className={`ml-2 ${getStatusColor(train.status)} text-xs`}>{train.status}</Badge>
+                      <span className="text-white font-medium">
+                        {train.number}
+                      </span>
+                      <Badge
+                        className={`ml-2 ${getStatusColor(
+                          train.status
+                        )} text-xs`}
+                      >
+                        {train.status}
+                      </Badge>
                     </div>
                   </div>
 
                   <div className="relative h-8 bg-slate-700/30 rounded">
                     <div
-                      className={`absolute top-1 bottom-1 ${getStatusColor(train.status)} rounded flex items-center px-2 min-w-0`}
+                      className={`absolute top-1 bottom-1 ${getStatusColor(
+                        train.status
+                      )} rounded flex items-center px-2 min-w-0`}
                       style={position}
                     >
                       <div className="flex items-center space-x-1 min-w-0">
@@ -105,7 +119,9 @@ export function ScheduleGantt({ trains }: ScheduleGanttProps) {
                           {train.origin} → {train.destination}
                         </span>
                         {train.delay > 0 && (
-                          <span className="text-xs text-yellow-200 flex-shrink-0">+{train.delay}m</span>
+                          <span className="text-xs text-yellow-200 flex-shrink-0">
+                            +{train.delay}m
+                          </span>
                         )}
                       </div>
                     </div>
@@ -114,21 +130,25 @@ export function ScheduleGantt({ trains }: ScheduleGanttProps) {
                   <div className="flex justify-between text-xs text-slate-400 mt-1">
                     <span>
                       Dep:{" "}
-                      {(train.actualDeparture || train.scheduledDeparture).toLocaleTimeString([], {
+                      {(
+                        train.actualDeparture || train.scheduledDeparture
+                      ).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}
                     </span>
                     <span>
                       Arr:{" "}
-                      {(train.estimatedArrival || train.scheduledArrival).toLocaleTimeString([], {
+                      {(
+                        train.estimatedArrival || train.scheduledArrival
+                      ).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}
                     </span>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
 
@@ -154,5 +174,5 @@ export function ScheduleGantt({ trains }: ScheduleGanttProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

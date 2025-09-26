@@ -69,12 +69,8 @@ export function OptimizationPanel({
           AI Optimization Suggestions ({pendingSuggestions.length})
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div
-          className={`space-y-4 ${
-            expanded ? "max-h-none" : "max-h-96 overflow-y-auto"
-          }`}
-        >
+      <CardContent className="overflow-y-auto">
+        <div className="space-y-4">
           {pendingSuggestions.length === 0 ? (
             <div className="text-center py-8">
               <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-3" />
