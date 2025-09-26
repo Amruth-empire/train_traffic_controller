@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useAuth } from "@/contexts/auth-context"
-import { PermissionManager, type Permission } from "@/lib/permissions"
+import type React from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { PermissionManager, type Permission } from "@/lib/permissions";
 
 interface PermissionGuardProps {
-  children: React.ReactNode
-  permission?: Permission
-  permissions?: Permission[]
-  requireAll?: boolean
-  section?: string
-  fallback?: React.ReactNode
+  children: React.ReactNode;
+  permission?: Permission;
+  permissions?: Permission[];
+  requireAll?: boolean;
+  section?: string;
+  fallback?: React.ReactNode;
 }
 
 export function PermissionGuard({
@@ -21,28 +21,33 @@ export function PermissionGuard({
   section,
   fallback = null,
 }: PermissionGuardProps) {
-  const { user } = useAuth()
+  const { user } = useAuth();
+
+  // If user is not authenticated, don't show the children
+  if (!user) {
+    return <>{fallback}</>;
+  }
 
   // Check single permission
   if (permission && !PermissionManager.hasPermission(user, permission)) {
-    return <>{fallback}</>
+    return <>{fallback}</>;
   }
 
   // Check multiple permissions
   if (permissions) {
     const hasAccess = requireAll
       ? PermissionManager.hasAllPermissions(user, permissions)
-      : PermissionManager.hasAnyPermission(user, permissions)
+      : PermissionManager.hasAnyPermission(user, permissions);
 
     if (!hasAccess) {
-      return <>{fallback}</>
+      return <>{fallback}</>;
     }
   }
 
   // Check section access
   if (section && !PermissionManager.canAccessSection(user, section)) {
-    return <>{fallback}</>
+    return <>{fallback}</>;
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }

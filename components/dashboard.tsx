@@ -131,7 +131,14 @@ export function Dashboard() {
       <main className="p-6 space-y-6">
         {selectedView === "overview" && (
           <>
-            <PermissionGuard permission="view_dashboard">
+            <PermissionGuard
+              permission="view_dashboard"
+              fallback={
+                <div className="bg-red-100 dark:bg-red-900/20 p-4 rounded-lg text-red-800 dark:text-red-200">
+                  No permission to view dashboard
+                </div>
+              }
+            >
               <KPICards kpis={kpis} />
 
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">

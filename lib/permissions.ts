@@ -63,6 +63,10 @@ export class PermissionManager {
     if (!user) return false
 
     const userPermissions = ROLE_PERMISSIONS[user.role]
+    if (!userPermissions) {
+      console.warn(`Unknown user role: ${user.role}`)
+      return false
+    }
     return userPermissions.includes(permission)
   }
 
@@ -90,7 +94,12 @@ export class PermissionManager {
   static getUserPermissions(user: User | null): Permission[] {
     if (!user) return []
 
-    return ROLE_PERMISSIONS[user.role]
+    const userPermissions = ROLE_PERMISSIONS[user.role]
+    if (!userPermissions) {
+      console.warn(`Unknown user role: ${user.role}`)
+      return []
+    }
+    return userPermissions
   }
 
   /**
