@@ -3,7 +3,7 @@ import { mockTrains, mockStations } from "./mock-data"
 
 class SimulationEngine {
   runSimulation(scenario: SimulationScenario): SimulationResults {
-    console.log("[v0] Running simulation:", scenario.name)
+    console.log("Running simulation:", scenario.name)
 
     let totalDelay = 0
     let affectedTrains = 0

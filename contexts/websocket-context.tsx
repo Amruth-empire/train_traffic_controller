@@ -30,25 +30,25 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
     // Subscribe to train updates
     const unsubscribeTrainUpdates = ws.on("train_update", (data) => {
-      console.log("[v0] Received train updates:", data)
+      console.log(" Received train updates:", data)
       setTrainUpdates((prev) => [...prev.slice(-10), data]) // Keep last 10 updates
     })
 
     // Subscribe to new alerts
     const unsubscribeAlerts = ws.on("alert", (data) => {
-      console.log("[v0] Received new alert:", data)
+      console.log(" Received new alert:", data)
       setNewAlerts((prev) => [data.alert, ...prev.slice(0, 4)]) // Keep last 5 alerts
     })
 
     // Subscribe to KPI updates
     const unsubscribeKPIs = ws.on("kpi_update", (data) => {
-      console.log("[v0] Received KPI updates:", data)
+      console.log("Received KPI updates:", data)
       setKpiUpdates(data.kpis)
     })
 
     // Subscribe to optimization suggestions
     const unsubscribeOptimization = ws.on("optimization_suggestion", (data) => {
-      console.log("[v0] Received optimization suggestion:", data)
+      console.log("[v Received optimization suggestion:", data)
       setOptimizationSuggestions((prev) => [data.suggestion, ...prev.slice(0, 2)]) // Keep last 3 suggestions
     })
 

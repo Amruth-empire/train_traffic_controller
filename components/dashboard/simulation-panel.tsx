@@ -92,7 +92,7 @@ export function SimulationPanel() {
     if (scenarios.length < 2) return
 
     const comparison = simulationEngine.compareScenarios(scenarios.slice(0, 3))
-    console.log("[v0] Scenario comparison:", comparison)
+    console.log("Scenario comparison:", comparison)
   }
 
   const ResultsCard = ({ results, title }: { results: SimulationResults; title: string }) => (

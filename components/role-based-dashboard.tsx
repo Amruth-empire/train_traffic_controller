@@ -164,9 +164,11 @@ export function RoleBasedDashboard() {
         </PermissionGuard>
 
         {/* AI Optimization Panel - Only for controllers and admins */}
+
         <PermissionGuard permission="implement_optimization">
           <OptimizationAnalysisPanel />
         </PermissionGuard>
+        
       </div>
     </div>
   )

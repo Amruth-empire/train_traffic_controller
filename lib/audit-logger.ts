@@ -24,7 +24,7 @@ class AuditLogger {
       this.logs = this.logs.slice(0, 1000)
     }
 
-    console.log("[v0] Audit log created:", auditLog)
+    console.log(" Audit log created:", auditLog)
   }
 
   getLogs(filters?: {

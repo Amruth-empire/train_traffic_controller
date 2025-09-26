@@ -26,7 +26,7 @@ export class TrainControlWebSocket {
 
   private simulateWebSocket() {
     // Simulate WebSocket connection with periodic updates
-    console.log("[v0] Simulating WebSocket connection for real-time updates")
+    console.log(" Simulating WebSocket connection for real-time updates")
 
     // Simulate train position updates every 3 seconds
     setInterval(() => {
@@ -136,13 +136,13 @@ export class TrainControlWebSocket {
   private handleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++
-      console.log(`[v0] Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
+      console.log(` Attempting to reconnect (${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
 
       setTimeout(() => {
         this.connect()
       }, this.reconnectDelay * this.reconnectAttempts)
     } else {
-      console.error("[v0] Max reconnection attempts reached")
+      console.error("Max reconnection attempts reached")
     }
   }
 
@@ -180,7 +180,7 @@ export class TrainControlWebSocket {
 
   public send(message: WebSocketMessage) {
     // In a real implementation, this would send to the WebSocket server
-    console.log("[v0] Sending WebSocket message:", message)
+    console.log(" Sending WebSocket message:", message)
   }
 
   public disconnect() {
