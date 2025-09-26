@@ -1,4 +1,4 @@
-import type { Train, Station, Alert, KPI, User, OptimizationSuggestion } from "./types"
+import type { Train, Station, Alert, KPI, User, OptimizationSuggestion, TrackSection } from "./types"
 
 // Mock users for different roles
 export const mockUsers: User[] = [
@@ -75,6 +75,7 @@ export const mockTrains: Train[] = [
   {
     id: "tr1",
     number: "EX101",
+    name: "Rajdhani Express",
     type: "express",
     status: "running",
     currentLocation: "Central Station",
@@ -91,10 +92,12 @@ export const mockTrains: Train[] = [
     speed: 85,
     maxSpeed: 120,
     coordinates: { lat: 40.735, lng: -73.99 },
+    occupiedTrack: "main-up",
   },
   {
     id: "tr2",
     number: "FR205",
+    name: "Freight Express",
     type: "freight",
     status: "delayed",
     currentLocation: "East Hub",
@@ -111,10 +114,12 @@ export const mockTrains: Train[] = [
     speed: 45,
     maxSpeed: 80,
     coordinates: { lat: 40.72, lng: -73.8 },
+    occupiedTrack: "loop-2",
   },
   {
     id: "tr3",
     number: "PS303",
+    name: "Shatabdi Express",
     type: "passenger",
     status: "scheduled",
     currentLocation: "North Terminal",
@@ -129,6 +134,29 @@ export const mockTrains: Train[] = [
     speed: 0,
     maxSpeed: 100,
     coordinates: { lat: 40.7589, lng: -73.9851 },
+    occupiedTrack: "platform-1",
+  },
+  {
+    id: "tr4",
+    number: "FR410",
+    name: "Goods Train",
+    type: "freight",
+    status: "running",
+    currentLocation: "East Hub",
+    destination: "Central Station",
+    origin: "South Junction",
+    scheduledDeparture: new Date(Date.now() - 20 * 60 * 1000),
+    actualDeparture: new Date(Date.now() - 20 * 60 * 1000),
+    scheduledArrival: new Date(Date.now() + 25 * 60 * 1000),
+    estimatedArrival: new Date(Date.now() + 25 * 60 * 1000),
+    delay: 0,
+    priority: 2,
+    capacity: 0,
+    occupancy: 0,
+    speed: 35,
+    maxSpeed: 60,
+    coordinates: { lat: 40.7100, lng: -73.8200 },
+    occupiedTrack: "freight-siding",
   },
 ]
 
@@ -191,6 +219,78 @@ export const mockOptimizationSuggestions: OptimizationSuggestion[] = [
     confidence: 0.72,
     createdAt: new Date(Date.now() - 5 * 60 * 1000),
     status: "pending",
+  },
+]
+
+// Mock track sections
+export const mockTrackSections: TrackSection[] = [
+  // Main Lines
+  {
+    id: "main-up",
+    name: "Main Line UP",
+    status: "OCCUPIED",
+    length: 1200,
+    maxSpeed: 100,
+    type: "main",
+  },
+  {
+    id: "main-dn",
+    name: "Main Line DN",
+    status: "CLEAR",
+    length: 1200,
+    maxSpeed: 100,
+    type: "main",
+  },
+  {
+    id: "main-track",
+    name: "Maintenance Track",
+    status: "MAINTENANCE",
+    length: 600,
+    maxSpeed: 20,
+    type: "main",
+  },
+  // Loop Lines
+  {
+    id: "loop-1",
+    name: "Loop Line 1",
+    status: "CLEAR",
+    length: 800,
+    maxSpeed: 60,
+    type: "loop",
+  },
+  {
+    id: "loop-2",
+    name: "Loop Line 2",
+    status: "OCCUPIED",
+    length: 800,
+    maxSpeed: 60,
+    type: "loop",
+  },
+  // Platform Roads
+  {
+    id: "platform-1",
+    name: "Platform Road 1",
+    status: "OCCUPIED",
+    length: 400,
+    maxSpeed: 30,
+    type: "platform",
+  },
+  {
+    id: "platform-2",
+    name: "Platform Road 2",
+    status: "CLEAR",
+    length: 400,
+    maxSpeed: 30,
+    type: "platform",
+  },
+  // Special Tracks
+  {
+    id: "freight-siding",
+    name: "Freight Siding",
+    status: "OCCUPIED",
+    length: 600,
+    maxSpeed: 25,
+    type: "special",
   },
 ]
 

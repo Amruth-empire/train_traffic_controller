@@ -9,6 +9,7 @@ import { DashboardHeader } from "./dashboard/dashboard-header";
 import { KPICards } from "./dashboard/kpi-cards";
 import { TrainMap } from "./dashboard/train-map";
 import { TrainList } from "./dashboard/train-list";
+import { TrackVisualization } from "./dashboard/track-visualization";
 import { AlertsPanel } from "./dashboard/alerts-panel";
 import { ScheduleGantt } from "./dashboard/schedule-gantt";
 import { OptimizationPanel } from "./dashboard/optimization-panel";
@@ -23,9 +24,10 @@ import {
   mockTrains,
   mockAlerts,
   mockOptimizationSuggestions,
+  mockTrackSections,
 } from "@/lib/mock-data";
 import { logUserAction } from "@/lib/audit-logger";
-import type { Train, Alert, KPI, OptimizationSuggestion } from "@/lib/types";
+import type { Train, Alert, KPI, OptimizationSuggestion, TrackSection } from "@/lib/types";
 
 export function Dashboard() {
   const { user } = useAuth();
@@ -33,6 +35,7 @@ export function Dashboard() {
   const [trains, setTrains] = useState<Train[]>(mockTrains);
   const [alerts, setAlerts] = useState<Alert[]>(mockAlerts);
   const [kpis, setKPIs] = useState<KPI>(mockKPIs);
+  const [trackSections, setTrackSections] = useState<TrackSection[]>(mockTrackSections);
   const [optimizationSuggestions, setOptimizationSuggestions] = useState<
     OptimizationSuggestion[]
   >(mockOptimizationSuggestions);
@@ -48,9 +51,9 @@ export function Dashboard() {
     | "alerts"
   >("overview");
 
-  // Filter data based on user permissions and section access
-  const filteredTrains = PermissionManager.filterDataByAccess(user, trains);
-  const filteredAlerts = PermissionManager.filterDataByAccess(user, alerts);
+  // For demo purposes, show all data (can be filtered later based on requirements)
+  const filteredTrains = trains;
+  const filteredAlerts = alerts;
 
   useEffect(() => {
     if (user) {
@@ -164,7 +167,15 @@ export function Dashboard() {
           <PermissionGuard permission="view_trains">
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
               <div className="xl:col-span-2">
-                <TrainMap trains={filteredTrains} />
+                <TrackVisualization 
+                  trackSections={trackSections} 
+                  trains={filteredTrains}
+                  onTrackClick={(track) => {
+                    if (user) {
+                      logUserAction(user, "track_view", `Viewed track section ${track.name} (${track.id})`);
+                    }
+                  }}
+                />
               </div>
               <div>
                 <TrainList trains={filteredTrains} showDetails />

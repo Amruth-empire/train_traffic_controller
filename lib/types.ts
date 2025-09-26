@@ -12,6 +12,7 @@ export interface User {
 export interface Train {
   id: string
   number: string
+  name?: string // Optional train name
   type: "passenger" | "freight" | "express"
   status: "scheduled" | "running" | "delayed" | "cancelled" | "completed"
   currentLocation: string
@@ -31,6 +32,16 @@ export interface Train {
     lat: number
     lng: number
   }
+  occupiedTrack?: string // Track section currently occupied by this train
+}
+
+export interface TrackSection {
+  id: string
+  name: string
+  status: "CLEAR" | "OCCUPIED" | "MAINTENANCE" | "BLOCKED"
+  length: number // in meters
+  maxSpeed: number // in km/h
+  type: "main" | "loop" | "platform" | "special"
 }
 
 export interface Station {
