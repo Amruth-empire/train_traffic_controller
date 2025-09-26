@@ -70,18 +70,19 @@ export function DashboardHeader({ user, selectedView, onViewChange }: DashboardH
     { id: "analytics" as const, label: "Analytics", icon: TrendingUp, permission: "view_dashboard" },
     { id: "simulation" as const, label: "Simulation", icon: Play, permission: "view_optimization" },
     { id: "alerts" as const, label: "Alert Rules", icon: AlertTriangle, permission: "manage_alerts" },
-    { id: "audit" as const, label: "Audit Logs", icon: FileText, permission: "system_admin" },
-    { id: "access" as const, label: "Access Control", icon: Shield, permission: "view_dashboard" },
+    { id: "audit" as const, label: "Audit Logs", icon: FileText, permission: "system_admin" }
   ]
 
   return (
     <header className="bg-slate-800 border-b border-slate-700 px-6 py-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Train className="h-8 w-8 text-blue-500" />
-          <h1 className="text-2xl font-bold text-white">Railway Control</h1>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <Train className="h-8 w-8 text-blue-500" />
+            <h1 className="text-xl font-bold text-white">Railway Control</h1>
+          </div>
 
-          <nav className="flex space-x-0 overflow-x-auto scrollbar-hide">
+          <nav className="flex space-x-0 scrollbar-hidden">
             {views.map((view) => {
               const Icon = view.icon
               return (
