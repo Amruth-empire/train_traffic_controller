@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PermissionGuard } from "@/components/permission-guard";
@@ -17,6 +18,8 @@ import {
   Play,
   FileText,
   AlertTriangle,
+  Menu,
+  X,
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import type { User } from "@/lib/types";
@@ -53,6 +56,8 @@ export function DashboardHeader({
   selectedView,
   onViewChange,
 }: DashboardHeaderProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const views = [
     {
       id: "overview" as const,
@@ -105,78 +110,181 @@ export function DashboardHeader({
   ];
 
   return (
-    <header className="bg-white text-slate-900 border-b border-slate-200 px-4 py-3 transition-colors duration-300 dark:bg-slate-800 dark:text-white dark:border-slate-700">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <Train className="h-8 w-8 text-blue-500" />
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white hidden sm:block">
-              Railway Control
-            </h1>
-            <h1 className="text-lg font-bold text-slate-900 dark:text-white block sm:hidden">
-              RC
-            </h1>
-          </div>
+    <>
+      <header className="bg-white text-slate-900 border-b border-slate-200 px-4 py-3 transition-colors duration-300 dark:bg-slate-800 dark:text-white dark:border-slate-700">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              {/* Mobile Menu Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
+              </Button>
 
-          <nav className="hidden lg:flex space-x-0 scrollbar-hidden">
-            {views.map((view) => {
-              const Icon = view.icon;
-              return (
-                <PermissionGuard
-                  key={view.id}
-                  permission={view.permission as any}
-                >
-                  <Button
-                    variant={selectedView === view.id ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => onViewChange(view.id)}
-                    className={cn(
-                      "whitespace-nowrap",
-                      selectedView === view.id
-                        ? "bg-blue-600 text-white hover:bg-blue-700"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700"
-                    )}
+              <Train className="h-8 w-8 text-blue-500" />
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white hidden sm:block">
+                Railway Control
+              </h1>
+              <h1 className="text-lg font-bold text-slate-900 dark:text-white block sm:hidden">
+                RC
+              </h1>
+            </div>
+
+            <nav className="hidden lg:flex space-x-0 scrollbar-hidden">
+              {views.map((view) => {
+                const Icon = view.icon;
+                return (
+                  <PermissionGuard
+                    key={view.id}
+                    permission={view.permission as any}
                   >
-                    <Icon className="h-4 w-4 mr-2" />
-                    <span className="hidden xl:inline">{view.label}</span>
-                  </Button>
-                </PermissionGuard>
-              );
-            })}
-          </nav>
-        </div>
-
-        <div className="flex items-center space-x-2 md:space-x-3">
-          <div className="hidden md:flex items-center space-x-2">
-            <span className="text-sm text-slate-500 dark:text-slate-300">
-              {new Date().toLocaleTimeString()}
-            </span>
-            <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
+                    <Button
+                      variant={selectedView === view.id ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => onViewChange(view.id)}
+                      className={cn(
+                        "whitespace-nowrap",
+                        selectedView === view.id
+                          ? "bg-blue-600 text-white hover:bg-blue-700"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700"
+                      )}
+                    >
+                      <Icon className="h-4 w-4 mr-2" />
+                      <span className="hidden xl:inline">{view.label}</span>
+                    </Button>
+                  </PermissionGuard>
+                );
+              })}
+            </nav>
           </div>
 
-          <ThemeToggle />
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <div className="hidden md:flex items-center space-x-2">
+              <span className="text-sm text-slate-500 dark:text-slate-300">
+                {new Date().toLocaleTimeString()}
+              </span>
+              <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
+            </div>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700"
-          >
-            <Bell className="h-4 w-4" />
-          </Button>
+            <ThemeToggle />
 
-          <PermissionGuard permission="system_admin">
             <Button
               variant="ghost"
               size="sm"
               className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700"
             >
-              <Settings className="h-4 w-4" />
+              <Bell className="h-4 w-4" />
             </Button>
-          </PermissionGuard>
 
-          <ProfileDropdown user={user} />
+            <PermissionGuard permission="system_admin">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            </PermissionGuard>
+
+            <ProfileDropdown user={user} />
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Mobile Sidebar */}
+      {isMobileMenuOpen && (
+        <>
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+
+          {/* Sidebar */}
+          <div className="fixed top-0 left-0 h-full w-80 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 z-50 lg:hidden">
+            <div className="p-4">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-2">
+                  <Train className="h-8 w-8 text-blue-500" />
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                    Railway Control
+                  </h2>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+
+              {/* Navigation */}
+              <nav className="space-y-2">
+                {views.map((view) => {
+                  const Icon = view.icon;
+                  return (
+                    <PermissionGuard
+                      key={view.id}
+                      permission={view.permission as any}
+                    >
+                      <Button
+                        variant={selectedView === view.id ? "default" : "ghost"}
+                        className={cn(
+                          "w-full justify-start",
+                          selectedView === view.id
+                            ? "bg-blue-600 text-white hover:bg-blue-700"
+                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700"
+                        )}
+                        onClick={() => {
+                          onViewChange(view.id);
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <Icon className="h-4 w-4 mr-3" />
+                        {view.label}
+                      </Button>
+                    </PermissionGuard>
+                  );
+                })}
+              </nav>
+
+              {/* Footer actions */}
+              <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
+                <div className="space-y-2">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700"
+                  >
+                    <Bell className="h-4 w-4 mr-3" />
+                    Notifications
+                  </Button>
+
+                  <PermissionGuard permission="system_admin">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700"
+                    >
+                      <Settings className="h-4 w-4 mr-3" />
+                      Settings
+                    </Button>
+                  </PermissionGuard>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 }

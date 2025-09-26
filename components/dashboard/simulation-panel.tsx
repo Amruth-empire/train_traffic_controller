@@ -155,13 +155,13 @@ export function SimulationPanel() {
       <CardContent>
         <Tabs defaultValue="create" className="w-full">
           <TabsList className="grid w-full grid-cols-3 bg-slate-700">
-            <TabsTrigger value="create" className="text-slate-300">
+            <TabsTrigger value="create" className="text-slate-500">
               Create Scenario
             </TabsTrigger>
-            <TabsTrigger value="results" className="text-slate-300">
+            <TabsTrigger value="results" className="text-slate-500">
               Results
             </TabsTrigger>
-            <TabsTrigger value="compare" className="text-slate-300">
+            <TabsTrigger value="compare" className="text-slate-500">
               Compare
             </TabsTrigger>
           </TabsList>
