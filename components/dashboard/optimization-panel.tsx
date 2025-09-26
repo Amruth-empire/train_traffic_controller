@@ -1,57 +1,68 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Zap, TrendingUp, Clock, Route, Settings, CheckCircle, X } from "lucide-react"
-import type { OptimizationSuggestion } from "@/lib/types"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Zap,
+  TrendingUp,
+  Clock,
+  Route,
+  Settings,
+  CheckCircle,
+  X,
+} from "lucide-react";
+import type { OptimizationSuggestion } from "@/lib/types";
 
 interface OptimizationPanelProps {
-  suggestions: OptimizationSuggestion[]
-  expanded?: boolean
+  suggestions: OptimizationSuggestion[];
+  expanded?: boolean;
 }
 
-export function OptimizationPanel({ suggestions, expanded = false }: OptimizationPanelProps) {
+export function OptimizationPanel({
+  suggestions,
+  expanded = false,
+}: OptimizationPanelProps) {
   const getTypeIcon = (type: OptimizationSuggestion["type"]) => {
     switch (type) {
       case "reroute":
-        return <Route className="h-4 w-4" />
+        return <Route className="h-4 w-4" />;
       case "reschedule":
-        return <Clock className="h-4 w-4" />
+        return <Clock className="h-4 w-4" />;
       case "priority_change":
-        return <TrendingUp className="h-4 w-4" />
+        return <TrendingUp className="h-4 w-4" />;
       case "platform_change":
-        return <Settings className="h-4 w-4" />
+        return <Settings className="h-4 w-4" />;
       default:
-        return <Zap className="h-4 w-4" />
+        return <Zap className="h-4 w-4" />;
     }
-  }
+  };
 
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 0.8) return "text-green-400"
-    if (confidence >= 0.6) return "text-yellow-400"
-    return "text-red-400"
-  }
+    if (confidence >= 0.8) return "text-green-400";
+    if (confidence >= 0.6) return "text-yellow-400";
+    return "text-red-400";
+  };
 
   const getStatusColor = (status: OptimizationSuggestion["status"]) => {
     switch (status) {
       case "pending":
-        return "bg-yellow-600"
+        return "bg-yellow-600";
       case "accepted":
-        return "bg-green-600"
+        return "bg-green-600";
       case "rejected":
-        return "bg-red-600"
+        return "bg-red-600";
       case "implemented":
-        return "bg-blue-600"
+        return "bg-blue-600";
       default:
-        return "bg-gray-600"
+        return "bg-gray-600";
     }
-  }
+  };
 
-  const pendingSuggestions = suggestions.filter((s) => s.status === "pending")
+  const pendingSuggestions = suggestions.filter((s) => s.status === "pending");
 
   return (
-    <Card className="bg-slate-800 border-slate-700 max-w-2xl">
+    <Card className="bg-slate-800 border-slate-700 h-full">
       <CardHeader>
         <CardTitle className="text-white flex items-center">
           <Zap className="h-5 w-5 mr-2 text-purple-500" />
@@ -59,12 +70,18 @@ export function OptimizationPanel({ suggestions, expanded = false }: Optimizatio
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className={`space-y-4 ${expanded ? "max-h-none" : "max-h-96"} overflow-y-auto`}>
+        <div
+          className={`space-y-4 ${
+            expanded ? "max-h-none" : "max-h-96 overflow-y-auto"
+          }`}
+        >
           {pendingSuggestions.length === 0 ? (
             <div className="text-center py-8">
               <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-3" />
               <p className="text-slate-400">No pending suggestions</p>
-              <p className="text-slate-500 text-sm">System is running optimally</p>
+              <p className="text-slate-500 text-sm">
+                System is running optimally
+              </p>
             </div>
           ) : (
             pendingSuggestions.map((suggestion) => (
@@ -77,32 +94,49 @@ export function OptimizationPanel({ suggestions, expanded = false }: Optimizatio
                     {getTypeIcon(suggestion.type)}
                     <div>
                       <h3 className="text-white font-semibold capitalize">
-                        {suggestion.type.replace("_", " ")} - Train {suggestion.trainId}
+                        {suggestion.type.replace("_", " ")} - Train{" "}
+                        {suggestion.trainId}
                       </h3>
-                      <Badge className={getStatusColor(suggestion.status)}>{suggestion.status}</Badge>
+                      <Badge className={getStatusColor(suggestion.status)}>
+                        {suggestion.status}
+                      </Badge>
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-sm text-slate-400">Confidence</div>
-                    <div className={`font-semibold ${getConfidenceColor(suggestion.confidence)}`}>
+                    <div
+                      className={`font-semibold ${getConfidenceColor(
+                        suggestion.confidence
+                      )}`}
+                    >
                       {(suggestion.confidence * 100).toFixed(0)}%
                     </div>
                   </div>
                 </div>
 
-                <p className="text-slate-300 text-sm mb-3">{suggestion.description}</p>
+                <p className="text-slate-300 text-sm mb-3">
+                  {suggestion.description}
+                </p>
 
                 <div className="bg-slate-800/50 rounded p-3 mb-3">
                   <div className="flex items-center space-x-2 mb-1">
                     <TrendingUp className="h-4 w-4 text-green-400" />
-                    <span className="text-sm font-medium text-green-400">Expected Improvement</span>
+                    <span className="text-sm font-medium text-green-400">
+                      Expected Improvement
+                    </span>
                   </div>
-                  <p className="text-slate-300 text-sm">{suggestion.estimatedImprovement}</p>
+                  <p className="text-slate-300 text-sm">
+                    {suggestion.estimatedImprovement}
+                  </p>
                 </div>
 
                 <div className="flex items-center justify-between text-xs text-slate-400 mb-3">
                   <span>
-                    Created: {suggestion.createdAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    Created:{" "}
+                    {suggestion.createdAt.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                   <span>Train: {suggestion.trainId}</span>
                 </div>
@@ -123,7 +157,10 @@ export function OptimizationPanel({ suggestions, expanded = false }: Optimizatio
                   >
                     View Details
                   </Button>
-                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                  <Button
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Accept
                   </Button>
@@ -149,11 +186,15 @@ export function OptimizationPanel({ suggestions, expanded = false }: Optimizatio
                 </div>
                 <div>
                   <span className="text-slate-400">Avg. Improvement:</span>
-                  <span className="text-blue-400 ml-2 font-semibold">7.2 min</span>
+                  <span className="text-blue-400 ml-2 font-semibold">
+                    7.2 min
+                  </span>
                 </div>
                 <div>
                   <span className="text-slate-400">System Learning:</span>
-                  <span className="text-purple-400 ml-2 font-semibold">Active</span>
+                  <span className="text-purple-400 ml-2 font-semibold">
+                    Active
+                  </span>
                 </div>
               </div>
             </div>
@@ -161,5 +202,5 @@ export function OptimizationPanel({ suggestions, expanded = false }: Optimizatio
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -203,12 +203,14 @@ export function Dashboard() {
 
         {selectedView === "optimization" && (
           <PermissionGuard permission="view_optimization">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              <OptimizationPanel
-                suggestions={optimizationSuggestions}
-                expanded
-              />
-              <div className="space-y-6">
+            <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
+              <div className="xl:col-span-2">
+                <OptimizationPanel
+                  suggestions={optimizationSuggestions}
+                  expanded
+                />
+              </div>
+              <div className="xl:col-span-3 space-y-4">
                 <KPICards kpis={kpis} />
                 <AlertsPanel alerts={filteredAlerts} />
               </div>
