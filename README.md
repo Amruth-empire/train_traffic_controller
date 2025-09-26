@@ -3,7 +3,7 @@
 *Automatically synced with your [.app](https://.app) deployments*
 
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/amruths-projects-dad48d31/v0-train-traffic-controller-dashboard)
-[![Built with v0](https://img.shields.io/badge/Built%20with-.app-black?style=for-the-badge)](https://.app/chat/projects/CH9fSuWfXaU)
+
 
 ## Overview
 
