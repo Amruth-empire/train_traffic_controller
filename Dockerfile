@@ -32,4 +32,4 @@ COPY --from=builder /app/package.json ./package.json
 EXPOSE 3000
 
 # Start the application
-CMD ["pnpm", "start"]
+CMD ["node", "node_modules/next/dist/bin/next", "start", "-p", "3000"]
