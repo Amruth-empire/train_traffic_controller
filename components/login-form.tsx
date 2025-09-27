@@ -93,12 +93,12 @@ export function LoginForm() {
             </Button>
           </form>
           <div className="mt-6 p-4 bg-slate-700/50 rounded-lg">
-            <p className="text-sm text-slate-300 mb-2">Demo Accounts:</p>
-            <div className="space-y-1 text-xs text-slate-400">
-              <div>Admin: admin@railway.com</div>
+            <p className="text-sm text-white mb-2">Demo Accounts:</p>
+            <div className="space-y-1 text-xs text-white">
+              <div></div>
               <div>Controller: controller@railway.com</div>
-              <div>Viewer: viewer@railway.com</div>
-              <div className="text-slate-500">Password: any</div>
+              <div></div>
+              <div className="text-white">Password:controller1233 </div>
             </div>
           </div>
         </CardContent>
