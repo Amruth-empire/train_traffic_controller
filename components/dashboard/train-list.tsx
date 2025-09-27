@@ -12,15 +12,46 @@ import {
   Gauge,
   Settings,
   AlertTriangle,
+  Loader2,
+  Wifi,
 } from "lucide-react";
 import type { Train as TrainType } from "@/lib/types";
 
 interface TrainListProps {
   trains: TrainType[];
   showDetails?: boolean;
+  isLoading?: boolean;
+  useRealData?: boolean;
 }
 
-export function TrainList({ trains, showDetails = false }: TrainListProps) {
+export function TrainList({ trains, showDetails = false, isLoading = false, useRealData = false }: TrainListProps) {
+  // Helper function to safely convert dates
+  const safeDate = (dateValue: Date | string | null | undefined): Date | null => {
+    if (!dateValue) return null;
+    if (dateValue instanceof Date) return dateValue;
+    if (typeof dateValue === 'string') {
+      const parsed = new Date(dateValue);
+      return isNaN(parsed.getTime()) ? null : parsed;
+    }
+    return null;
+  };
+
+  // Helper function to format time safely
+  const formatTime = (dateValue: Date | string | null | undefined): string => {
+    const date = safeDate(dateValue);
+    if (!date) return "N/A";
+    
+    try {
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch (error) {
+      console.warn("Date formatting error:", error);
+      return "N/A";
+    }
+  };
+
   const getStatusColor = (status: TrainType["status"]) => {
     switch (status) {
       case "running":
@@ -74,13 +105,35 @@ export function TrainList({ trains, showDetails = false }: TrainListProps) {
   };
 
   return (
-    <Card className="bg-slate-800 border-slate-700 h-full flex flex-col">
+    <Card className="bg-slate-800 border-slate-700 h-full flex flex-col relative">
       <CardHeader className="flex-shrink-0">
-        <CardTitle className="text-white flex items-center">
-          <Train className="h-5 w-5 mr-2 text-blue-500" />
-          Active Trains ({trains.length})
+        <CardTitle className="text-white flex items-center justify-between">
+          <div className="flex items-center">
+            <Train className="h-5 w-5 mr-2 text-blue-500" />
+            Active Trains ({trains.length})
+          </div>
+          {useRealData && (
+            <div className="flex items-center space-x-1 text-xs text-green-400">
+              <Wifi className="h-3 w-3" />
+              <span>Live Data</span>
+            </div>
+          )}
         </CardTitle>
       </CardHeader>
+      
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="absolute inset-0 bg-slate-800/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
+          <div className="flex flex-col items-center space-y-3 text-white">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            <div className="text-center">
+              <p className="font-medium">Fetching Real Train Data</p>
+              <p className="text-sm text-slate-400">Getting live updates from IRCTC...</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <CardContent className="flex-1 min-h-0">
         <div className="space-y-3 h-120 overflow-y-auto">
           {trains.map((train) => (
@@ -130,15 +183,7 @@ export function TrainList({ trains, showDetails = false }: TrainListProps) {
                   <div className="flex items-center space-x-2 text-slate-300">
                     <Clock className="h-4 w-4" />
                     <span>
-                      {train.estimatedArrival
-                        ? train.estimatedArrival.toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : train.scheduledArrival.toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                      ETA: {formatTime(train.estimatedArrival || train.scheduledArrival)}
                     </span>
                   </div>
                   {train.type !== "freight" && (

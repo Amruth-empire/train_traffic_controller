@@ -20,6 +20,11 @@ import {
   AlertTriangle,
   Menu,
   X,
+  Loader2,
+  CheckCircle,
+  XCircle,
+  RefreshCw,
+  Clock,
 } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import type { User } from "@/lib/types";
@@ -49,12 +54,26 @@ interface DashboardHeaderProps {
       | "audit"
       | "alerts"
   ) => void;
+  useRealData?: boolean;
+  onToggleRealData?: () => void;
+  apiUsage?: { used: number; remaining: number };
+  isLoadingRealData?: boolean;
+  fetchStatus?: 'idle' | 'fetching' | 'success' | 'error';
+  lastFetchTime?: Date | null;
+  onRefreshRealData?: () => void;
 }
 
 export function DashboardHeader({
   user,
   selectedView,
   onViewChange,
+  useRealData = false,
+  onToggleRealData,
+  apiUsage = { used: 0, remaining: 20 },
+  isLoadingRealData = false,
+  fetchStatus = 'idle',
+  lastFetchTime,
+  onRefreshRealData,
 }: DashboardHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -173,6 +192,90 @@ export function DashboardHeader({
               </span>
               <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
             </div>
+
+            {/* Real Data Toggle */}
+            {onToggleRealData && (
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1">
+                  <Button
+                    variant={useRealData ? "default" : "outline"}
+                    size="sm"
+                    onClick={onToggleRealData}
+                    disabled={isLoadingRealData}
+                    className={cn(
+                      "text-xs relative",
+                      useRealData
+                        ? "bg-green-600 text-white hover:bg-green-700"
+                        : "text-slate-600 hover:text-slate-900 border-slate-300 dark:text-slate-300 dark:border-slate-600"
+                    )}
+                  >
+                    {isLoadingRealData ? (
+                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    ) : fetchStatus === 'success' && useRealData ? (
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                    ) : fetchStatus === 'error' && useRealData ? (
+                      <XCircle className="h-3 w-3 mr-1" />
+                    ) : (
+                      <Train className="h-3 w-3 mr-1" />
+                    )}
+                    {isLoadingRealData ? "Fetching..." : useRealData ? "Live Data" : "Demo Data"}
+                  </Button>
+
+                  {/* Refresh button when using real data */}
+                  {useRealData && onRefreshRealData && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={onRefreshRealData}
+                      disabled={isLoadingRealData}
+                      className="p-1 h-7 w-7"
+                      title="Refresh real data"
+                    >
+                      <RefreshCw className={cn(
+                        "h-3 w-3",
+                        isLoadingRealData && "animate-spin"
+                      )} />
+                    </Button>
+                  )}
+                </div>
+
+                {/* API Usage and Status */}
+                <div className="flex items-center space-x-1">
+                  <Badge 
+                    variant={apiUsage.remaining < 5 ? "destructive" : "secondary"}
+                    className="text-xs px-1 py-0"
+                  >
+                    {apiUsage.remaining}/20 API calls
+                  </Badge>
+
+                  {/* Last fetch time */}
+                  {lastFetchTime && useRealData && (
+                    <div 
+                      className="flex items-center text-xs text-slate-500 dark:text-slate-400"
+                      title={`Last updated: ${lastFetchTime.toLocaleString()}`}
+                    >
+                      <Clock className="h-3 w-3 mr-1" />
+                      {Math.floor((Date.now() - lastFetchTime.getTime()) / 60000)}m ago
+                    </div>
+                  )}
+
+                  {/* Status indicator */}
+                  {useRealData && (
+                    <div className="flex items-center">
+                      {fetchStatus === 'fetching' && (
+                        <div className="h-2 w-2 bg-blue-500 rounded-full animate-pulse" title="Fetching data" />
+                      )}
+                      {fetchStatus === 'success' && (
+                        <div className="h-2 w-2 bg-green-500 rounded-full" title="Data loaded successfully" />
+                      )}
+                      {fetchStatus === 'error' && (
+                        <div className="h-2 w-2 bg-red-500 rounded-full" title="Failed to fetch data" />
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <ThemeToggle />
 

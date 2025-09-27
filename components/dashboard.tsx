@@ -19,6 +19,7 @@ import { AuditLogsPanel } from "./dashboard/audit-logs-panel";
 import { SimulationPanel } from "./dashboard/simulation-panel";
 import { EnhancedKPIDashboard } from "./dashboard/enhanced-kpi-dashboard";
 import { ConfigurableAlerts } from "./dashboard/configurable-alerts";
+import { ApiStatusNotification } from "./api-status-notification";
 import {
   mockKPIs,
   mockTrains,
@@ -35,10 +36,21 @@ import type {
   TrackSection,
 } from "@/lib/types";
 
+// Helper to ensure dates are properly converted
+const ensureDatesInTrains = (trainsData: Train[]) => {
+  return trainsData.map(train => ({
+    ...train,
+    scheduledDeparture: new Date(train.scheduledDeparture),
+    actualDeparture: train.actualDeparture ? new Date(train.actualDeparture) : undefined,
+    scheduledArrival: new Date(train.scheduledArrival),
+    estimatedArrival: train.estimatedArrival ? new Date(train.estimatedArrival) : undefined,
+  }));
+};
+
 export function Dashboard() {
   const { user } = useAuth();
   const { kpiUpdates, trainUpdates } = useWebSocket();
-  const [trains, setTrains] = useState<Train[]>(mockTrains);
+  const [trains, setTrains] = useState<Train[]>(() => ensureDatesInTrains(mockTrains));
   const [alerts, setAlerts] = useState<Alert[]>(mockAlerts);
   const [kpis, setKPIs] = useState<KPI>(mockKPIs);
   const [trackSections, setTrackSections] =
@@ -57,10 +69,62 @@ export function Dashboard() {
     | "audit"
     | "alerts"
   >("overview");
+  const [useRealData, setUseRealData] = useState(false);
+  const [apiUsage, setApiUsage] = useState({ used: 0, remaining: 20 });
+  const [isLoadingRealData, setIsLoadingRealData] = useState(false);
+  const [lastFetchTime, setLastFetchTime] = useState<Date | null>(null);
+  const [fetchStatus, setFetchStatus] = useState<'idle' | 'fetching' | 'success' | 'error'>('idle');
 
   // For demo purposes, show all data (can be filtered later based on requirements)
   const filteredTrains = trains;
   const filteredAlerts = alerts;
+
+  // Fetch real train data from IRCTC API
+  const fetchRealTrainData = async () => {
+    setIsLoadingRealData(true);
+    setFetchStatus('fetching');
+    
+    try {
+      console.log("🚂 Fetching real train data from IRCTC API...");
+      const startTime = Date.now();
+      
+      const response = await fetch("/api/trains?real=true");
+      const data = await response.json();
+      
+      const endTime = Date.now();
+      const duration = endTime - startTime;
+      
+      if (data.success) {
+        const trainsWithDates = ensureDatesInTrains(data.data);
+        setTrains(trainsWithDates);
+        setApiUsage({
+          used: data.meta?.apiUsage?.requestsUsed || 0,
+          remaining: data.meta?.apiUsage?.requestsRemaining || 20
+        });
+        setLastFetchTime(new Date());
+        setFetchStatus('success');
+        
+        console.log(`✅ Updated ${data.data.length} trains with real data in ${duration}ms`);
+        console.log(`📊 API Usage: ${data.meta?.apiUsage?.requestsUsed || 0}/20 requests used`);
+        
+        // Show success message
+        if (data.meta?.realDataCount > 0) {
+          console.log(`🎯 ${data.meta.realDataCount} trains with real IRCTC data, ${data.meta.fallbackDataCount} with fallback data`);
+        }
+        
+        return true;
+      } else {
+        setFetchStatus('error');
+        console.error("❌ API returned unsuccessful response:", data);
+      }
+    } catch (error) {
+      setFetchStatus('error');
+      console.error("❌ Failed to fetch real train data:", error);
+    } finally {
+      setIsLoadingRealData(false);
+    }
+    return false;
+  };
 
   useEffect(() => {
     if (user) {
@@ -71,6 +135,43 @@ export function Dashboard() {
       );
     }
   }, [user, selectedView]);
+
+  // Load real data on component mount if available
+  useEffect(() => {
+    const loadInitialData = async () => {
+      // Check if we should use real data (maybe from localStorage preference)
+      const savedPreference = localStorage.getItem('useRealTrainData');
+      if (savedPreference === 'true') {
+        setUseRealData(true);
+        await fetchRealTrainData();
+      }
+    };
+    
+    loadInitialData();
+  }, []);
+
+  // Toggle real data usage
+  const toggleRealData = async () => {
+    if (!useRealData) {
+      const success = await fetchRealTrainData();
+      if (success) {
+        setUseRealData(true);
+        localStorage.setItem('useRealTrainData', 'true');
+      }
+    } else {
+      setUseRealData(false);
+      setTrains(ensureDatesInTrains(mockTrains)); // Revert to mock data with proper dates
+      setFetchStatus('idle');
+      localStorage.setItem('useRealTrainData', 'false');
+    }
+  };
+
+  // Refresh real data
+  const refreshRealData = async () => {
+    if (useRealData && !isLoadingRealData) {
+      await fetchRealTrainData();
+    }
+  };
 
   useEffect(() => {
     if (kpiUpdates) {
@@ -134,9 +235,23 @@ export function Dashboard() {
         user={user!}
         selectedView={selectedView}
         onViewChange={setSelectedView}
+        useRealData={useRealData}
+        onToggleRealData={toggleRealData}
+        apiUsage={apiUsage}
+        isLoadingRealData={isLoadingRealData}
+        fetchStatus={fetchStatus}
+        lastFetchTime={lastFetchTime}
+        onRefreshRealData={refreshRealData}
       />
 
       <RealTimeNotifications />
+      
+      <ApiStatusNotification 
+        fetchStatus={fetchStatus}
+        useRealData={useRealData}
+        isLoadingRealData={isLoadingRealData}
+        apiUsage={apiUsage}
+      />
 
       <main className="p-6 space-y-6">
         {selectedView === "overview" && (
@@ -161,7 +276,11 @@ export function Dashboard() {
               </div>
 
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <TrainList trains={filteredTrains} />
+                <TrainList 
+                  trains={filteredTrains} 
+                  isLoading={isLoadingRealData}
+                  useRealData={useRealData}
+                />
                 <PermissionGuard permission="view_optimization">
                   <OptimizationPanel suggestions={optimizationSuggestions} />
                 </PermissionGuard>
@@ -189,7 +308,12 @@ export function Dashboard() {
                 />
               </div>
               <div>
-                <TrainList trains={filteredTrains} showDetails />
+                <TrainList 
+                  trains={filteredTrains} 
+                  showDetails 
+                  isLoading={isLoadingRealData}
+                  useRealData={useRealData}
+                />
               </div>
             </div>
           </PermissionGuard>

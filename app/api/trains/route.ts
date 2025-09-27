@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { mockTrains, mockStations } from "@/lib/mock-data"
+import { irctcService, POPULAR_TRAIN_NUMBERS } from "@/lib/irctc-service"
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,8 +8,37 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status")
     const section = searchParams.get("section")
     const type = searchParams.get("type")
+    const useReal = searchParams.get("real") === "true"
 
     let filteredTrains = [...mockTrains]
+    
+    // If real data is requested, try to get some real train data
+    if (useReal) {
+      try {
+        const realTrainNumbers = POPULAR_TRAIN_NUMBERS.slice(0, 2) // Limit to 2 to conserve API calls
+        const realTrainData = await irctcService.getMultipleTrainStatus(realTrainNumbers)
+        
+        // Update mock trains with real data where available
+        let realDataCount = 0
+        for (const [trainNumber, irctcData] of realTrainData) {
+          if (realDataCount < filteredTrains.length) {
+            const train = filteredTrains[realDataCount]
+            train.number = irctcData.train_number
+            train.name = irctcData.train_name || train.name
+            train.currentLocation = irctcData.current_station_name || train.currentLocation
+            train.destination = irctcData.to_station_name || train.destination
+            train.origin = irctcData.from_station_name || train.origin
+            train.delay = irctcData.late_minutes || 0
+            train.status = train.delay > 10 ? 'delayed' : train.delay > 0 ? 'running' : 'on_time'
+            realDataCount++
+          }
+        }
+        
+        console.log(`🚂 Enhanced ${realDataCount} trains with real IRCTC data`)
+      } catch (error) {
+        console.warn('⚠️ Failed to fetch real train data, using mock data:', error)
+      }
+    }
 
     // Filter by status
     if (status) {

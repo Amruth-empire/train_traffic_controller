@@ -1,15 +1,12 @@
 "use client"
 
-import { ErrorBoundary } from "@/components/error-boundary"
 import { AuthGuard } from "@/components/auth-guard"
 import { Dashboard } from "@/components/dashboard"
 
 export default function Home() {
   return (
-    <ErrorBoundary>
-      <AuthGuard>
-        <Dashboard />
-      </AuthGuard>
-    </ErrorBoundary>
+    <AuthGuard>
+      <Dashboard />
+    </AuthGuard>
   )
 }
