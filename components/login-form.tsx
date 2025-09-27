@@ -98,7 +98,7 @@ export function LoginForm() {
               <div></div>
               <div>Controller: controller@railway.com</div>
               <div></div>
-              <div className="text-white">Password:controller1233 </div>
+              <div className="text-white">Password: controller1233 </div>
             </div>
           </div>
         </CardContent>
